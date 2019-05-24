@@ -1,6 +1,7 @@
 # TDD-Kata examples.
 
-http://kata-log.rocks/tdd
+http://www.tddbuddy.com/#katacatalog
 
-To run tests:
-./vendor/bin/phpunit --testsuite unitTests
+Password kata.
+
+http://www.tddbuddy.com/katas/Password.pdf
