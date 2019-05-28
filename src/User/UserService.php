@@ -21,22 +21,38 @@ class UserService
      * @var \App\Password\PasswordManager
      */
     private $passwordManager;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(PasswordManager $passwordManager)
-    {
+    /**
+     * UserService constructor.
+     *
+     * @param \App\Password\PasswordManager $passwordManager
+     * @param \App\User\UserRepository      $userRepository
+     */
+    public function __construct(
+        PasswordManager $passwordManager,
+        UserRepository $userRepository
+    ) {
         $this->passwordManager = $passwordManager;
+        $this->userRepository = $userRepository;
     }
 
     /**
-     * @param string $userName
+     * @param string $username
      * @param string $password
      *
      * @return bool
      */
-    public function areValidUserCredentials(string $userName, string $password): bool
+    public function areValidUserCredentials(string $username, string $password): bool
     {
-        $hashedPass = $this->passwordManager->generatePassword($password);
+        /**
+         * @var \App\User\User $user
+         */
+        $user = $this->userRepository->getByUsername($username);
 
-        return $this->passwordManager->validate($password, $hashedPass);
+        return $this->passwordManager->validate($password, $user->getPassword());
     }
 }
