@@ -3,7 +3,9 @@
 
 namespace App\User;
 
-interface User
+class User
 {
-    public function getPassword(): string;
+    public function getPassword()
+    {
+    }
 }

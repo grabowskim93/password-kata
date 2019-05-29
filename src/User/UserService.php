@@ -13,7 +13,7 @@ use App\Password\PasswordManager;
 /**
  * Class UserService
  *
- * @package App\UserRepository
+ * @package App\UserRepositoryInterface
  */
 class UserService
 {
@@ -22,15 +22,15 @@ class UserService
      */
     private $passwordManager;
     /**
-     * @var UserRepository
+     * @var \App\User\UserRepository
      */
     private $userRepository;
 
     /**
      * UserService constructor.
      *
-     * @param \App\Password\PasswordManager $passwordManager
-     * @param \App\User\UserRepository      $userRepository
+     * @param \App\Password\PasswordManager     $passwordManager
+     * @param \App\User\UserRepository $userRepository
      */
     public function __construct(
         PasswordManager $passwordManager,

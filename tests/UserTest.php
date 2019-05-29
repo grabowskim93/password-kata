@@ -8,8 +8,11 @@ declare(strict_types=1);
 
 namespace Test;
 
+use App\Email\EmailService;
 use App\Password\PasswordManager;
+use App\Token\TokenGenerator;
 use App\User\User;
+use App\User\UserEmailService;
 use App\User\UserRepository;
 use App\User\UserService;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +30,7 @@ class UserTest extends TestCase
     private $passwordManager;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject | UserRepository
+     * @var \PHPUnit\Framework\MockObject\MockObject | \App\User\UserRepository
      */
     private $userRepository;
 
@@ -36,6 +39,16 @@ class UserTest extends TestCase
      */
     private $user;
 
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject | TokenGenerator
+     */
+    private $tokenGenerator;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject | EmailService
+     */
+    private $userEmailService;
+
     protected function setUp()
     {
         $this->passwordManager = $this->getMockBuilder(PasswordManager::class)
@@ -43,11 +56,19 @@ class UserTest extends TestCase
             ->getMock();
 
         $this->userRepository = $this->getMockBuilder(UserRepository::class)
-            ->setMethods(['getByUsername'])
+            ->setMethods(['getByUsername', 'getByEmail'])
             ->getMock();
 
         $this->user = $this->getMockBuilder(User::class)
             ->setMethods(['getPassword'])
+            ->getMock();
+
+        $this->tokenGenerator = $this->getMockBuilder(TokenGenerator::class)
+            ->setMethods(['randomToken'])
+            ->getMock();
+
+        $this->userEmailService = $this->getMockBuilder(EmailService::class)
+            ->setMethods(['send'])
             ->getMock();
     }
 
@@ -74,6 +95,24 @@ class UserTest extends TestCase
             ->willReturn(true);
 
         $this->assertTrue($userService->areValidUserCredentials('example_username', 'pass01'));
+    }
+
+    public function testResetEmail()
+    {
+        $userEmailService = new UserEmailService($this->tokenGenerator, $this->userEmailService);
+
+        $this->userRepository
+            ->method('getByEmail')
+            ->with('examplea_email@test.com')
+            ->willReturn($this->user);
+
+
+        $this->tokenGenerator
+            ->expects($this->once())
+            ->method('randomToken')
+            ->willReturn('token');
+
+        $userEmailService->sendResetEmail('example_email@test.com');
     }
 
     protected function tearDown()
